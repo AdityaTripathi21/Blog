@@ -1,5 +1,5 @@
 import express from "express";
-import fs from "fs";
+import fs, { read } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -16,14 +16,34 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const articles = [
-    { id: 1, title: 'My First Blog Post', content: 'Hello World!', date: '2025-01-01' },
-    { id: 2, title: 'Another Article', content: 'More content here.', date: '2025-01-02' },
-];
+function readArticles() {
+    const filePath = path.join(__dirname, 'data', 'articles.json');
+    try {
+        const data = fs.readFileSync(filePath, 'utf8');
+        return JSON.parse(data);
+    }
+    catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+function writeArticles(articles) {
+    const filePath = path.join(__dirname, 'data', 'articles.json');
+    try { 
+        fs.writeFileSync(filePath, JSON.stringify(articles, null, 2), 'utf8');
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
+
 
 const userCreds = {username: 'adi', password: 'trip'};
 
 app.get('/', (req, res) => {
+    const articles = readArticles();
     const content = `
         <h2>Articles</h2>
         <ul>
@@ -45,6 +65,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/article/:id', (req, res) => {
+    const articles = readArticles();
     const article = articles.find(a => a.id === parseInt(req.params.id));
     if (!article) return res.status(404).send('Article not found');
 
@@ -71,6 +92,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
+    const articles = readArticles();
     res.render('dashboard', {title: 'Admin Dashboard', articles});
 });
 
@@ -79,6 +101,7 @@ app.get('/admin/add', (req, res) => {
 });
 
 app.post('/admin/add', (req, res) => {
+    const articles = readArticles();
     const newArticle = {
         id: Date.now(),
         title: req.body.title,
@@ -86,9 +109,9 @@ app.post('/admin/add', (req, res) => {
         date: new Date().toISOString().split('T')[0],
     };
     articles.push(newArticle);
+    writeArticles(articles);
     res.redirect('/admin');
 });
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on Port ${PORT}`);
