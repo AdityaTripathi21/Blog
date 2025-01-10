@@ -1,14 +1,14 @@
 [
   {
-    "id": 1,
-    "title": "My First Blog Post",
-    "content": "Hello World!",
-    "date": "2025-01-01"
+    "id": 1736535407879,
+    "title": "Hello World!",
+    "content": "First blog.",
+    "date": "2025-01-10"
   },
   {
-    "id": 2,
-    "title": "Another Article",
-    "content": "More content here.",
-    "date": "2025-01-02"
+    "id": 1736535426296,
+    "title": "Another article",
+    "content": "Second article!",
+    "date": "2025-01-10"
   }
 ]

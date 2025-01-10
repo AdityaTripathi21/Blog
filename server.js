@@ -1,5 +1,5 @@
 import express from "express";
-import fs, { read } from "fs";
+import fs, { read, write } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -111,6 +111,35 @@ app.post('/admin/add', (req, res) => {
     articles.push(newArticle);
     writeArticles(articles);
     res.redirect('/admin');
+});
+
+app.get('/admin/edit/:id', (req, res) => {
+    const articles = readArticles();
+    const article = articles.find(a => a.id === parseInt(req.params.id));
+    res.render('edit', {title: 'Update Article', article});
+});
+
+app.post('/admin/edit/:id', (req, res) => {
+    const articles = readArticles();
+    const index = articles.findIndex(a => a.id === parseInt(req.params.id));
+    articles[index] = {
+        ...articles[index],
+        title: req.body.title,
+        content: req.body.content,
+    };
+
+    writeArticles(articles);
+    res.redirect('/admin');
+});
+
+
+// not ideal because this is not RESTful, don't use GET to delete 
+app.get('/admin/delete/:id', (req, res) => {
+    const articles = readArticles();
+    const id = parseInt(req.params.id);
+    const filteredArticles = articles.filter(article => article.id !== id);
+    writeArticles(filteredArticles);
+    res.redirect('/admin'); 
 });
 
 app.listen(PORT, () => {
