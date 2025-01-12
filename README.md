@@ -1,0 +1,1 @@
+Simple blog that displays articles with add, delete, and edit functionality. Requires credentials to add, edit, and delete articles. Used express as my server and EJS to render the blog. Currently no styling as of now.
